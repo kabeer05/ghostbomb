@@ -1,6 +1,6 @@
 {
   "name": "ghostbomb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI SMS bomber created using NodeJS",
   "main": "src/index.js",
   "repository": "https://github.com/kabeer05/ghostbomb.git",

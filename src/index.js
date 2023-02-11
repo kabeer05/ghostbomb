@@ -40,6 +40,10 @@ if (parseInt(process.versions.node) < 14) {
   process.exit(1);
 }
 
+let successSms = 0,
+  failedSms = 0,
+  totalSms = 0;
+
 (async () => {
   try {
     await axios.get("https://motherfuckingwebsite.com");
@@ -49,13 +53,7 @@ if (parseInt(process.versions.node) < 14) {
     );
     process.exit(1);
   }
-})();
 
-let successSms = 0,
-  failedSms = 0,
-  totalSms = 0;
-
-(async () => {
   const smsPrompts = await prompts([
     {
       type: "text",
@@ -90,7 +88,6 @@ let successSms = 0,
   ).filter((file) => file.endsWith(".js"));
 
   for (let i = 0; totalSms < smsPrompts.smsCount; i++) {
-    console.clear();
     if (i == providers.length) i = 0;
     const provider = await import(`./providers/${providers[i]}`);
     try {
@@ -100,6 +97,7 @@ let successSms = 0,
       failedSms++;
     }
     totalSms++;
+    console.clear();
     console.log(
       `Sending SMS ${chalk.bgBlueBright(totalSms)} of ${chalk.bgBlueBright(
         smsPrompts.smsCount
