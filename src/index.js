@@ -2,7 +2,7 @@
 
 import chalk from "chalk";
 import gradient from "gradient-string";
-import fs from "fs/promises";
+import fs from "fs";
 import path from "path";
 import axios from "axios";
 import prompts from "prompts";
@@ -10,6 +10,13 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+if (process.argv[1] == "-v" || process.argv[1] == "--version") {
+  const packageFile = fs.readFileSync(path.join("package.json"));
+  const info = JSON.parse(packageFile);
+  console.log(`v${info.version}`);
+  process.exit(0);
+}
 
 const logo = `
 
@@ -26,7 +33,7 @@ console.log(gradient.passion(logo));
 console.log(chalk.blue(`Contributors: ${contributors.join(", ")}`));
 console.log(
   chalk.yellow(
-    `This tool is for educational purposes only. Don't use it for illegal purposes.\n`
+    `This tool is for educational purposes only. Don't use it for harm/discomfort purposes.\n`
   )
 );
 
@@ -58,14 +65,13 @@ let successSms = 0,
     {
       type: "text",
       name: "phone",
-      message: "Enter the phone number to send SMS to: ",
-      validate: (value) => /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/.test(value),
-      format: (value) => value.replace("+91", ""),
+      message: "Enter the phone number to send SMS to (without +91): ",
+      validate: (value) => /^[6-9]\d{9}$/.test(value),
     },
     {
       type: "number",
       name: "smsCount",
-      message: "Enter the number of SMS to send: ",
+      message: "Enter the number of SMS to: ",
       initial: 5,
       min: 1,
       max: 150,
@@ -83,9 +89,9 @@ let successSms = 0,
     },
   ]);
 
-  const providers = (
-    await fs.readdir(path.join(__dirname, "providers"))
-  ).filter((file) => file.endsWith(".js"));
+  const providers = fs
+    .readdirSync(path.join(__dirname, "providers"))
+    .filter((file) => file.endsWith(".js"));
 
   for (let i = 0; totalSms < smsPrompts.smsCount; i++) {
     if (i == providers.length) i = 0;
@@ -98,6 +104,9 @@ let successSms = 0,
     }
     totalSms++;
     console.clear();
+    console.log(gradient.passion(logo));
+    console.log(chalk.yellow(`Bombing in progress...`));
+    console.log("Make sure you have a stable internet connection\n");
     console.log(
       `Sending SMS ${chalk.bgBlueBright(totalSms)} of ${chalk.bgBlueBright(
         smsPrompts.smsCount
@@ -111,11 +120,11 @@ let successSms = 0,
 
   console.log(
     `\n${chalk.green(successSms)} out of ${chalk.blueBright(
-      smsPrompts.smsCount
+      smsPrompts.smsCount || 0
     )} SMS sent successfully!`
   );
   console.log(
-    `Thank you for using this tool! Made with ${chalk.red("❤")} by Kabeer Arora`
+    `Thank you for using this tool! Made with ${chalk.red("♡")} by Kabeer Arora`
   );
 })();
 
